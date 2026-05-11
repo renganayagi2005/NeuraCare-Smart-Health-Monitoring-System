@@ -1,39 +1,55 @@
-# NeuraCare AI Health Monitoring System
+# NeuraCare Smart Health Monitoring System
 
-NeuraCare AI is a healthcare monitoring web application prototype developed using PHP, MySQL, HTML, CSS, and XAMPP. The system allows patient registration, patient record retrieval, health status monitoring, and monitoring history visualization.
+NeuraCare is an IoT-based smart health monitoring system designed to monitor real-time patient health parameters using ESP32 and biomedical sensors. The system integrates hardware monitoring with a web-based dashboard for remote patient data visualization and health status tracking.
 
-
+---
 
 ## Features
 
-- Patient Registration System
-- Existing Patient Search
-- Dynamic Patient Dashboard
-- Heart Rate Monitoring
+- Real-time Heart Rate Monitoring
 - SpO2 Monitoring
-- Temperature Monitoring
+- Body Temperature Monitoring
+- Personalized Baseline Learning
+- Lightweight Anomaly Detection
 - Health Risk Classification
+- Remote Doctor Dashboard
+- Patient Registration & Record Management
 - Monitoring History Tracking
 - MySQL Database Integration
-- Real-Time Timestamp Display
 
-
+---
 
 ## Technologies Used
 
+### Embedded & IoT
+- ESP32
+- Embedded C
+- MAX30102
+- MLX90614
+
+### Software & Web
 - PHP
 - MySQL
 - HTML
 - CSS
 - XAMPP
-- phpMyAdmin
 
+### Data Processing
+- Python
+- HTTP Communication
 
+---
+
+## System Workflow
+
+Sensor Data → ESP32 Processing → Baseline Analysis → Risk Classification → Web Dashboard Visualization
+
+---
 
 ## Project Structure
 
-
-Neuracare/
+```text
+NeuraCare/
 │
 ├── index.php
 ├── dashboard.php
@@ -44,37 +60,13 @@ Neuracare/
 ├── patient_database.php
 ├── about.php
 │
-
+├── firmware/
+│   └── neuracare_health_monitoring.ino
+│
 ├── assets/
 │   └── css/
-
-
-# NeuraCare – AI Health Monitoring System
-
-NeuraCare is an AI-assisted IoT health monitoring system designed to monitor real-time patient health parameters using ESP32 and biomedical sensors.
-
-## Features
-- Real-time heart rate monitoring
-- SpO2 and body temperature tracking
-- Sensor integration using ESP32
-- Automated health anomaly detection
-- Doctor dashboard for remote monitoring
-
-## Technologies Used
-- ESP32
-- Python
-- Embedded C
-- MAX30102
-- MLX90614
-- Web Dashboard
-
-## Workflow
-Sensor Data → ESP32 Processing → Python Analysis → Dashboard Visualization
-
-## Future Improvements
-- Cloud integration
-- Real-time alerts
-- Mobile application support
 │       └── style.css
+│
+├── screenshots/
 │
 └── README.md
