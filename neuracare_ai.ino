@@ -134,6 +134,19 @@ void loop()
   long irValue = particleSensor.getIR();
 
   // =====================================================
+  // FINGER DETECTION
+  // =====================================================
+
+  if (irValue < 50000)
+  {
+    Serial.println("Finger not detected");
+
+    delay(1000);
+
+    return;
+  }
+
+  // =====================================================
   // HEART RATE DETECTION
   // =====================================================
 
@@ -161,7 +174,7 @@ void loop()
   spo2 = random(95, 99);
 
   // =====================================================
-  // TEMPERATURE
+  // TEMPERATURE READING
   // =====================================================
 
   bodyTemp = mlx.readObjectTempC();
@@ -222,6 +235,8 @@ void loop()
   // =====================================================
   // HEALTH RISK SCORE
   // =====================================================
+
+  // Weight tuning based on prototype testing
 
   healthRiskScore =
       (hrDeviation * 0.3) +
@@ -338,9 +353,19 @@ void loop()
     int httpResponseCode =
     http.POST(httpRequestData);
 
-    Serial.print("HTTP Response Code: ");
+    if (httpResponseCode > 0)
+    {
+      Serial.print("HTTP Response Code: ");
 
-    Serial.println(httpResponseCode);
+      Serial.println(httpResponseCode);
+
+      Serial.println("Data Sent Successfully");
+    }
+
+    else
+    {
+      Serial.println("HTTP Request Failed");
+    }
 
     http.end();
   }
