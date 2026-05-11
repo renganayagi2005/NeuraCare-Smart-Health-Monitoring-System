@@ -5,26 +5,33 @@
 #include "heartRate.h"
 #include <Adafruit_MLX90614.h>
 
+// =====================================================
 // WIFI CREDENTIALS
+// =====================================================
 
 const char* ssid = "YOUR_WIFI_NAME";
 const char* password = "YOUR_WIFI_PASSWORD";
 
+// =====================================================
 // WEBSITE API URL
-// Replace YOUR_PC_IP with your laptop IP
+// Replace YOUR_PC_IP with your system IP
 // Example:
-// http://192.168.1.5/Neuracarae/receive_data.php
-
+// http://192.168.1.5/NeuraCare/receive_data.php
+// =====================================================
 
 String serverName =
-"http://YOUR_PC_IP/Neuracarae/receive_data.php";
+"http://YOUR_PC_IP/NeuraCare/receive_data.php";
 
+// =====================================================
 // SENSOR OBJECTS
+// =====================================================
 
 MAX30105 particleSensor;
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
-// VARIABLES
+// =====================================================
+// SENSOR VARIABLES
+// =====================================================
 
 long lastBeat = 0;
 
@@ -32,7 +39,9 @@ float beatsPerMinute = 0;
 float bodyTemp = 0;
 float spo2 = 0;
 
+// =====================================================
 // PERSONALIZED BASELINE LEARNING
+// =====================================================
 
 float baselineHR = 0;
 float baselineSpO2 = 0;
@@ -43,7 +52,9 @@ const int calibrationSamples = 20;
 
 bool baselineCalculated = false;
 
+// =====================================================
 // RISK VARIABLES
+// =====================================================
 
 float hrDeviation;
 float spo2Deviation;
@@ -54,7 +65,9 @@ float anomalyConfidenceIndex = 0;
 
 String systemStatus = "NORMAL";
 
+// =====================================================
 // SETUP
+// =====================================================
 
 void setup()
 {
@@ -62,7 +75,9 @@ void setup()
 
   Wire.begin();
 
+  // =====================================================
   // WIFI CONNECTION
+  // =====================================================
 
   WiFi.begin(ssid, password);
 
@@ -77,7 +92,9 @@ void setup()
   Serial.println();
   Serial.println("WiFi Connected");
 
-  // MAX30102 SENSOR
+  // =====================================================
+  // MAX30102 SENSOR INITIALIZATION
+  // =====================================================
 
   if (!particleSensor.begin(Wire, I2C_SPEED_STANDARD))
   {
@@ -91,7 +108,9 @@ void setup()
   particleSensor.setPulseAmplitudeRed(0x0A);
   particleSensor.setPulseAmplitudeGreen(0);
 
-  // MLX90614 SENSOR
+  // =====================================================
+  // MLX90614 SENSOR INITIALIZATION
+  // =====================================================
 
   if (!mlx.begin())
   {
@@ -101,18 +120,22 @@ void setup()
   }
 
   Serial.println("================================");
-  Serial.println("NeuraCare AI Started");
+  Serial.println("NeuraCare Smart Monitoring Started");
   Serial.println("Personalized Baseline Learning");
   Serial.println("================================");
 }
 
+// =====================================================
 // LOOP
+// =====================================================
 
 void loop()
 {
   long irValue = particleSensor.getIR();
 
+  // =====================================================
   // HEART RATE DETECTION
+  // =====================================================
 
   if (checkForBeat(irValue) == true)
   {
@@ -121,17 +144,31 @@ void loop()
     lastBeat = millis();
 
     beatsPerMinute = 60 / (delta / 1000.0);
+
+    // Prevent unrealistic BPM values
+
+    if (beatsPerMinute < 40 || beatsPerMinute > 180)
+    {
+      beatsPerMinute = baselineHR;
+    }
   }
 
+  // =====================================================
   // SIMULATED SpO2
+  // Used during prototype testing phase
+  // =====================================================
 
   spo2 = random(95, 99);
 
+  // =====================================================
   // TEMPERATURE
+  // =====================================================
 
   bodyTemp = mlx.readObjectTempC();
 
+  // =====================================================
   // PERSONALIZED BASELINE LEARNING
+  // =====================================================
 
   if (calibrationCount < calibrationSamples)
   {
@@ -152,25 +189,26 @@ void loop()
     return;
   }
 
+  // =====================================================
   // CALCULATE BASELINE ONLY ONCE
+  // =====================================================
 
   if (!baselineCalculated)
   {
-    baselineHR =
-    baselineHR / calibrationSamples;
+    baselineHR = baselineHR / calibrationSamples;
 
-    baselineSpO2 =
-    baselineSpO2 / calibrationSamples;
+    baselineSpO2 = baselineSpO2 / calibrationSamples;
 
-    baselineTemp =
-    baselineTemp / calibrationSamples;
+    baselineTemp = baselineTemp / calibrationSamples;
 
     baselineCalculated = true;
 
     Serial.println("Baseline Learning Completed");
   }
 
-  // AI-ASSISTED DEVIATION ANALYSIS
+  // =====================================================
+  // SMART DEVIATION ANALYSIS
+  // =====================================================
 
   hrDeviation =
   abs(beatsPerMinute - baselineHR);
@@ -181,14 +219,18 @@ void loop()
   tempDeviation =
   abs(bodyTemp - baselineTemp);
 
+  // =====================================================
   // HEALTH RISK SCORE
+  // =====================================================
 
   healthRiskScore =
       (hrDeviation * 0.3) +
       (spo2Deviation * 0.5) +
       (tempDeviation * 0.2);
 
+  // =====================================================
   // ANOMALY CONFIDENCE INDEX
+  // =====================================================
 
   anomalyConfidenceIndex = 0;
 
@@ -206,7 +248,11 @@ void loop()
   {
     anomalyConfidenceIndex += 20;
   }
+
+  // =====================================================
   // HUMAN-IN-THE-LOOP DECISION SUPPORT
+  // =====================================================
+
   if (anomalyConfidenceIndex >= 70)
   {
     systemStatus =
@@ -224,7 +270,9 @@ void loop()
     systemStatus = "NORMAL";
   }
 
+  // =====================================================
   // SERIAL MONITOR OUTPUT
+  // =====================================================
 
   Serial.println("================================");
 
@@ -262,7 +310,9 @@ void loop()
   Serial.print("System Status: ");
   Serial.println(systemStatus);
 
+  // =====================================================
   // SEND DATA TO WEBSITE DATABASE
+  // =====================================================
 
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -271,19 +321,19 @@ void loop()
     http.begin(serverName);
 
     http.addHeader(
-    "Content-Type",
-    "application/x-www-form-urlencoded"
+      "Content-Type",
+      "application/x-www-form-urlencoded"
     );
 
     String httpRequestData =
 
-    "heart_rate=" + String(beatsPerMinute) +
+      "heart_rate=" + String(beatsPerMinute) +
 
-    "&spo2=" + String(spo2) +
+      "&spo2=" + String(spo2) +
 
-    "&temperature=" + String(bodyTemp) +
+      "&temperature=" + String(bodyTemp) +
 
-    "&status=" + systemStatus;
+      "&status=" + systemStatus;
 
     int httpResponseCode =
     http.POST(httpRequestData);
@@ -300,6 +350,9 @@ void loop()
     Serial.println("WiFi Disconnected");
   }
 
+  // =====================================================
   // LOOP DELAY
+  // =====================================================
+
   delay(5000);
 }
