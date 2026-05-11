@@ -44,8 +44,37 @@ Neuracare/
 ├── patient_database.php
 ├── about.php
 │
+
 ├── assets/
 │   └── css/
+
+
+# NeuraCare – AI Health Monitoring System
+
+NeuraCare is an AI-assisted IoT health monitoring system designed to monitor real-time patient health parameters using ESP32 and biomedical sensors.
+
+## Features
+- Real-time heart rate monitoring
+- SpO2 and body temperature tracking
+- Sensor integration using ESP32
+- Automated health anomaly detection
+- Doctor dashboard for remote monitoring
+
+## Technologies Used
+- ESP32
+- Python
+- Embedded C
+- MAX30102
+- MLX90614
+- Web Dashboard
+
+## Workflow
+Sensor Data → ESP32 Processing → Python Analysis → Dashboard Visualization
+
+## Future Improvements
+- Cloud integration
+- Real-time alerts
+- Mobile application support
 │       └── style.css
 │
 └── README.md
